@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace LargestWordinBook
 {
@@ -20,20 +21,20 @@ namespace LargestWordinBook
             int wordLength = 0;
             string largestWord = "";
 
-            string filePath = @"C:\Temp\books\aliceinwonderland.txt";
+            string filePath = @".\books\aliceinwonderland.txt";
             string lastStringBuffer = "";
 
             using (FileStream fs = File.OpenRead(filePath))
             {
                 byte[] b = new byte[1024];
                 UTF8Encoding temp = new UTF8Encoding(true);
-                while (fs.Read(b,0,b.Length) > 0)
+                while (fs.Read(b, 0, b.Length) > 0)
                 {
-                    char[] delimiters = { ' ', ',', '-','\n','\r','"', '“', '”', '—', '/','.' };
+                    char[] delimiters = { ' ', ',', '-', '\n', '\r', '"', '“', '”', '—', '/', '.' };
                     string currentStringBuffer = temp.GetString(b);
 
                     //check if there is a split word
-                    if (lastStringBuffer != "" && isAlphaNumeric(lastStringBuffer[lastStringBuffer.Length-1]) && isAlphaNumeric(currentStringBuffer[0]))
+                    if (lastStringBuffer != "" && isAlphaNumeric(lastStringBuffer[lastStringBuffer.Length - 1]) && isAlphaNumeric(currentStringBuffer[0]))
                     {
                         string[] lastwords = lastStringBuffer.Split(delimiters);
                         string lastword = lastwords[lastwords.Length - 1];
@@ -53,12 +54,25 @@ namespace LargestWordinBook
                         }
 
                     }
-                    
+
                     Console.WriteLine(temp.GetString(b));
                 }
             }
 
             Console.WriteLine("Largest word is: " + largestWord + " , Length of " + wordLength);
+
+            DictionaryAPI dapi = new DictionaryAPI(largestWord);
+            DictionaryObject[] myDictionary = dapi.GetDictionary();
+
+            if (myDictionary != null)
+            {
+                // looks up the definition of the word
+                dapi.OutputDefinition(myDictionary);
+
+            }
+
+
+        }
         }
     }
-}
+
